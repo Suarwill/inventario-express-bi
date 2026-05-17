@@ -56,7 +56,7 @@ raiz/
 │
 ├── index.html          # Interfaz estructurada SPA (Single Page Application)
 ├── css/
-│   └── estilos.css     # Estilos responsivos optimizados para pantallas táctiles y PC
+│   └── styles.css     # Estilos responsivos optimizados para pantallas táctiles y PC
 ├── js/
 │   ├── app.js          # Orquestador global, enrutamiento local e inicialización
 │   ├── db.js           # Persistencia en localStorage, backups e importación/exportación
