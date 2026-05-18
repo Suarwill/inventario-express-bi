@@ -1,4 +1,4 @@
-# FrausTech - Sistema de Inventario Exprés & BI Local
+# FrausTech - Sistema de Inventario Express & BI Local
 
 ![JavaScript](https://img.shields.io/badge/Vanilla_JS-ES6+-yellow?style=for-the-badge&logo=javascript)
 ![Environment](https://img.shields.io/badge/Environment-100%25_Offline-green?style=for-the-badge)
@@ -56,14 +56,17 @@ raiz/
 │
 ├── index.html          # Interfaz estructurada SPA (Single Page Application)
 ├── css/
-│   └── styles.css     # Estilos responsivos optimizados para pantallas táctiles y PC
+│   └── styles.css      # Estilos responsivos
 ├── js/
 │   ├── app.js          # Orquestador global, enrutamiento local e inicialización
+│   ├── componentes.js  # Componentes comunes
 │   ├── db.js           # Persistencia en localStorage, backups e importación/exportación
 │   ├── ventas.js       # Lógica del carrito de compras, favoritos y métodos de pago
 │   ├── inventario.js   # Gestión de abastecimiento, mermas por vencimiento y consumo interno
 │   ├── bi.js           # Algoritmos analíticos de predicción de stock, márgenes y tramos horarios
 │   ├── caja.js         # Flujo de apertura y cierre ciego de caja
 │   └── seguridad.js    # Control de licencias y validación del reloj del sistema
+├── config/
+│   └── cliente.js      # Informacion comercial
 └── assets/
     └── icono.png       # Identidad visual de la aplicación para accesos directos o APK
