@@ -9,11 +9,11 @@ class MainHeader extends HTMLElement {
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html" class="nav-link ${paginaActual === 'index.html' ? 'active' : ''}">🛒 Ventas</a></li>
-                    <li><a href="mod-inv.html" class="nav-link ${paginaActual === 'mod-inv.html' ? 'active' : ''}">📦 Inventario</a></li>
-                    <li><a href="mod-bi.html" class="nav-link ${paginaActual === 'mod-bi.html' ? 'active' : ''}">📊 Negocio (BI)</a></li>
-                    <li><a href="mod-caja.html" class="nav-link ${paginaActual === 'mod-caja.html' ? 'active' : ''}">💵 Caja</a></li>
-                    <li><a href="mod-soporte.html" class="nav-link ${paginaActual === 'mod-soporte.html' ? 'active' : ''}">⚙️ Soporte</a></li>
+                    <li><a href="index.html" class="nav-link ${paginaActual === 'index.html' ? 'active' : ''}">Ventas</a></li>
+                    <li><a href="mod-inv.html" class="nav-link ${paginaActual === 'mod-inv.html' ? 'active' : ''}">Inventario</a></li>
+                    <li><a href="mod-bi.html" class="nav-link ${paginaActual === 'mod-bi.html' ? 'active' : ''}">Negocio (BI)</a></li>
+                    <li><a href="mod-caja.html" class="nav-link ${paginaActual === 'mod-caja.html' ? 'active' : ''}">Caja</a></li>
+                    <li><a href="mod-soporte.html" class="nav-link ${paginaActual === 'mod-soporte.html' ? 'active' : ''}">Soporte</a></li>
                 </ul>
             </nav>
         </header>
