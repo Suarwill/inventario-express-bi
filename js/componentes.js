@@ -10,10 +10,10 @@ class MainHeader extends HTMLElement {
             <nav>
                 <ul>
                     <li><a href="index.html" class="nav-link ${paginaActual === 'index.html' ? 'active' : ''}">🛒 Ventas</a></li>
-                    <li><a href="inventario.html" class="nav-link ${paginaActual === 'inventario.html' ? 'active' : ''}">📦 Inventario</a></li>
-                    <li><a href="bi.html" class="nav-link ${paginaActual === 'bi.html' ? 'active' : ''}">📊 Negocio (BI)</a></li>
-                    <li><a href="caja.html" class="nav-link ${paginaActual === 'caja.html' ? 'active' : ''}">💵 Caja</a></li>
-                    <li><a href="soporte.html" class="nav-link ${paginaActual === 'soporte.html' ? 'active' : ''}">⚙️ Soporte</a></li>
+                    <li><a href="mod-inv.html" class="nav-link ${paginaActual === 'mod-inv.html' ? 'active' : ''}">📦 Inventario</a></li>
+                    <li><a href="mod-bi.html" class="nav-link ${paginaActual === 'mod-bi.html' ? 'active' : ''}">📊 Negocio (BI)</a></li>
+                    <li><a href="mod-caja.html" class="nav-link ${paginaActual === 'mod-caja.html' ? 'active' : ''}">💵 Caja</a></li>
+                    <li><a href="mod-soporte.html" class="nav-link ${paginaActual === 'mod-soporte.html' ? 'active' : ''}">⚙️ Soporte</a></li>
                 </ul>
             </nav>
         </header>
