@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrausTech - Sistema de Inventario Exprés & BI</title>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    
+    <script src="js/componentes.js" defer></script>
+    
+    <script src="js/seguridad.js" defer></script>
+    <script src="js/db.js" defer></script>
+    <script src="js/ventas.js" defer></script>
+    <script src="js/inventario.js" defer></script>
+    <script src="js/bi.js" defer></script>
+    <script src="js/caja.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+
+<body>
+
+    <div id="app-container">
+        
+        <main-header></main-header>
+
+        <main>
+            <section id="sec-inventario" class="app-section">
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" data-sub="sub-abastecer">📥 Ingresar Compra</button>
+                    <button class="sub-tab-btn" data-sub="sub-mermas">🚨 Retiro / Merma</button>
+                    <button class="sub-tab-btn" data-sub="sub-maestro">📋 Maestro Productos</button>
+                </div>
+                <div class="sub-content" id="sub-abastecer"></div>
+                <div class="sub-content" id="sub-mermas" style="display:none;"></div>
+                <div class="sub-content" id="sub-maestro" style="display:none;"></div>
+            </section>
+        </main>
+
+        <main-footer></main-footer>
+
+    </div>
+
+    <div id="bloqueo-licencia" style="display:none;"></div>
+
+</body>
+</html>

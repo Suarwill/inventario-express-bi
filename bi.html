@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrausTech - Sistema de Inventario Exprés & BI</title>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    
+    <script src="js/componentes.js" defer></script>
+    
+    <script src="js/seguridad.js" defer></script>
+    <script src="js/db.js" defer></script>
+    <script src="js/ventas.js" defer></script>
+    <script src="js/inventario.js" defer></script>
+    <script src="js/bi.js" defer></script>
+    <script src="js/caja.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+
+<body>
+
+    <div id="app-container">
+        
+        <main-header></main-header>
+
+        <main>
+            <section id="sec-bi" class="app-section">
+                <div class="dashboard-grid">
+                    <div class="card card-alert" id="bi-capital">
+                        <h3>Capital Atrapado</h3>
+                        <p class="card-valor" id="val-capital">$0</p>
+                    </div>
+                    <div class="card" id="bi-top-margen">
+                        <h3>Top Margen (Ganancia)</h3>
+                        <ul class="bi-lista" id="lista-top-margen"></ul>
+                    </div>
+                    <div class="card" id="bi-horarios">
+                        <h3>Tramos Horarios Críticos</h3>
+                        <div id="chart-horarios-simulado"></div>
+                    </div>
+                    <div class="card card-sugerencia" id="bi-sugerencias">
+                        <h3>Sugerencia de Abastecimiento</h3>
+                        <div class="controles-sugerencia">
+                            <button id="sug-semana">Ver Semana</button>
+                            <button id="sug-mes">Ver Mes</button>
+                        </div>
+                        <ul class="bi-lista" id="lista-sugerencias"></ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <main-footer></main-footer>
+
+    </div>
+
+    <div id="bloqueo-licencia" style="display:none;"></div>
+
+</body>
+</html>

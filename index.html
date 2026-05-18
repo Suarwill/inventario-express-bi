@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrausTech - Sistema de Inventario Exprés & BI</title>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    
+    <script src="js/componentes.js" defer></script>
+    
+    <script src="js/seguridad.js" defer></script>
+    <script src="js/db.js" defer></script>
+    <script src="js/ventas.js" defer></script>
+    <script src="js/inventario.js" defer></script>
+    <script src="js/bi.js" defer></script>
+    <script src="js/caja.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+
+<body>
+
+    <div id="app-container">
+        
+        <main-header></main-header>
+
+        <main>
+            <section id="sec-ventas" class="app-section">
+                <div class="pos-container">
+                    <div class="pos-izquierda">
+                        <div class="buscador-box">
+                            <input type="text" id="input-escaner" placeholder="Escanee código de barras o busque...">
+                            <button type="button" class="btn-pausa" id="btn-pausar-venta">⏸️ Pausar</button>
+                        </div>
+                        <div class="tabla-carrito-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cant.</th>
+                                        <th>Precio</th>
+                                        <th>Total</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="carrito-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="pos-derecha">
+                        <div class="favoritos-grid" id="grid-favoritos"></div>
+                        <div class="totales-box">
+                            <div class="total-fila"><span>Neto:</span> <span id="total-neto">$0</span></div>
+                            <div class="total-fila"><span>IVA (19%):</span> <span id="total-iva">$0</span></div>
+                            <div class="total-main"><span>TOTAL:</span> <span id="total-bruto">$0</span></div>
+                            <div class="metodos-pago">
+                                <button class="btn-pago" data-metodo="efectivo">💵 Efectivo</button>
+                                <button class="btn-pago" data-metodo="tarjeta">💳 Tarjeta</button>
+                                <button class="btn-pago" data-metodo="transferencia">📲 Transf.</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <main-footer></main-footer>
+
+    </div>
+
+    <div id="bloqueo-licencia" style="display:none;"></div>
+
+</body>
+</html>

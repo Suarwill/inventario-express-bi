@@ -1,0 +1,662 @@
+/* ==========================================================================
+   VARIABLES Y PALETA DE COLORES (Enfoque POS Nocturno / Alto Contraste)
+   ========================================================================== */
+:root {
+    --bg-principal: #12141c;
+    --bg-paneles: #1a1d29;
+    --bg-interacciones: #242838;
+    --bg-campos: #0d0f14;
+    
+    --texto-principal: #f3f4f6;
+    --texto-secundario: #9ca3af;
+    --texto-oscuro: #111827;
+    
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --exito: #10b981;
+    --exito-hover: #059669;
+    --alerta: #ef4444;
+    --alerta-hover: #dc2626;
+    --advertencia: #f59e0b;
+    
+    --borde: #2e344d;
+    --sombra: rgba(0, 0, 0, 0.4);
+    --fuente: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   RESETS Y CONFIGURACIÓN BASE
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-principal);
+    color: var(--texto-principal);
+    font-family: var(--fuente);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+input, button, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+/* ==========================================================================
+   ESTRUCTURA SPA GENERAL
+   ========================================================================== */
+#app-container {
+    display: block;
+    min-height: 100vh;
+}
+
+main {
+    padding: 20px;
+    min-height: calc(100vh - 130px);
+}
+
+/* ==========================================================================
+   HEADER Y NAVEGACIÓN PRINCIPAL
+   ========================================================================== */
+header {
+    background-color: var(--bg-paneles);
+    border-bottom: 2px solid var(--borde);
+    padding: 0 20px;
+    box-shadow: 0 4px 6px -1px var(--sombra);
+}
+
+.logo-area h2 {
+    margin: 0;
+    padding-top: 15px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--accent);
+}
+
+.logo-area h2 span {
+    color: var(--texto-secundario);
+    font-weight: 400;
+    font-size: 1rem;
+    margin-left: 6px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 15px 0 0 0;
+    padding: 0;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 8px 8px 0 0;
+    color: var(--texto-secundario);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--texto-principal);
+    background-color: var(--bg-interacciones);
+}
+
+.nav-link.active {
+    color: var(--texto-principal);
+    background-color: var(--bg-principal);
+    border-color: var(--borde);
+    position: relative;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--accent);
+}
+
+/* ==========================================================================
+   1. MÓDULO DE VENTAS (POS INTERFACE)
+   ========================================================================== */
+.pos-container {
+    display: block;
+}
+
+.pos-izquierda {
+    margin-bottom: 20px;
+}
+
+.buscador-box {
+    display: block;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+#input-escaner {
+    width: 100%;
+    padding: 16px 20px;
+    padding-right: 120px;
+    background-color: var(--bg-campos);
+    border: 2px solid var(--borde);
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.2s ease;
+}
+
+#input-escaner:focus {
+    border-color: var(--accent);
+}
+
+.btn-pausa {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    bottom: 8px;
+    padding: 0 16px;
+    background-color: var(--bg-interacciones);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-pausa:hover {
+    background-color: var(--borde);
+}
+
+.tabla-carrito-wrapper {
+    background-color: var(--bg-paneles);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px var(--sombra);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th {
+    background-color: var(--bg-interacciones);
+    color: var(--texto-secundario);
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--borde);
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--borde);
+    font-size: 1.05rem;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.favoritos-grid {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.favoritos-grid button {
+    display: inline-block;
+    width: calc(33.333% - 8px);
+    margin: 4px;
+    padding: 18px 10px;
+    background-color: var(--bg-paneles);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px var(--sombra);
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.favoritos-grid button:hover {
+    background-color: var(--bg-interacciones);
+    border-color: var(--accent);
+}
+
+.favoritos-grid button:active {
+    transform: scale(0.97);
+}
+
+.totales-box {
+    background-color: var(--bg-paneles);
+    border: 2px solid var(--borde);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 15px -3px var(--sombra);
+}
+
+.total-fila {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: var(--texto-secundario);
+}
+
+.total-fila span:last-child {
+    float: right;
+    color: var(--texto-principal);
+    font-weight: 600;
+}
+
+.total-fila::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.total-main {
+    display: block;
+    margin: 15px 0;
+    padding: 15px 0;
+    border-top: 1px dashed var(--borde);
+    border-bottom: 1px dashed var(--borde);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--exito);
+}
+
+.total-main span:last-child {
+    float: right;
+}
+
+.total-main::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.metodos-pago {
+    display: block;
+    margin-top: 15px;
+}
+
+.btn-pago {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-pago:last-child {
+    margin-bottom: 0;
+}
+
+.btn-pago[data-metodo="efectivo"] {
+    background-color: var(--exito);
+    color: var(--texto-oscuro);
+}
+.btn-pago[data-metodo="efectivo"]:hover { background-color: var(--exito-hover); }
+
+.btn-pago[data-metodo="tarjeta"] {
+    background-color: var(--accent);
+    color: var(--texto-principal);
+}
+.btn-pago[data-metodo="tarjeta"]:hover { background-color: var(--accent-hover); }
+
+.btn-pago[data-metodo="transferencia"] {
+    background-color: var(--bg-interacciones);
+    border: 1px solid var(--borde);
+    color: var(--texto-principal);
+}
+.btn-pago[data-metodo="transferencia"]:hover { background-color: var(--borde); }
+
+.btn-pago:active { transform: scale(0.99); }
+
+/* ==========================================================================
+   2. MÓDULO DE INVENTARIO (TABS SECUNDARIOS)
+   ========================================================================== */
+.sub-tabs {
+    display: block;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.sub-tab-btn {
+    display: inline-block;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: var(--texto-secundario);
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-right: 10px;
+}
+
+.sub-tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.sub-content {
+    background-color: var(--bg-paneles);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+/* ==========================================================================
+   3. MÓDULO DE BUSINESS INTELLIGENCE (DASHBOARD CARDS)
+   ========================================================================== */
+.dashboard-grid {
+    display: block;
+}
+
+.card {
+    background-color: var(--bg-paneles);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px -1px var(--sombra);
+}
+
+.card h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    color: var(--texto-secundario);
+    font-weight: 600;
+}
+
+.card-valor {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 10px 0 0 0;
+    color: var(--texto-principal);
+}
+
+.card-alert {
+    border-left: 4px solid var(--advertencia);
+}
+
+.card-alert .card-valor {
+    color: var(--advertencia);
+}
+
+.card-sugerencia {
+    border-left: 4px solid var(--accent);
+}
+
+.bi-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bi-lista li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borde);
+    font-size: 0.95rem;
+}
+
+.bi-lista li:last-child {
+    border-bottom: none;
+}
+
+.controles-sugerencia {
+    margin-bottom: 15px;
+}
+
+.controles-sugerencia button {
+    padding: 6px 12px;
+    background-color: var(--bg-interacciones);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+/* ==========================================================================
+   4. CONTROL DE CAJA Y SECCIONES GENÉRICAS
+   ========================================================================== */
+.caja-box {
+    max-width: 500px;
+    margin: 40px auto;
+    background-color: var(--bg-paneles);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 25px var(--sombra);
+}
+
+.caja-box h2 {
+    margin: 0 0 20px 0;
+}
+
+/* ==========================================================================
+   5. CONFIGURACIÓN, RESPALDO Y SOPORTE
+   ========================================================================== */
+.soporte-container {
+    display: block;
+}
+
+.soporte-card {
+    background-color: var(--bg-paneles);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.soporte-card h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+}
+
+.btn-accion {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-interacciones);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.btn-accion:hover {
+    background-color: var(--borde);
+}
+
+.btn-accion:last-child {
+    margin-bottom: 0;
+}
+
+.btn-whatsapp {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.btn-whatsapp:hover { background-color: #20ba5a; }
+
+.btn-email {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: var(--accent);
+    color: var(--texto-principal);
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-email:hover { background-color: var(--accent-hover); }
+
+/* ==========================================================================
+   INTERFAZ DE BLOQUEO DE LICENCIA (ANTIFRAUDE)
+   ========================================================================== */
+#bloqueo-licencia {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(13, 15, 20, 0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.licencia-invalida #app-container {
+    filter: blur(8px);
+    pointer-events: none;
+    user-select: none;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--borde);
+    background-color: var(--bg-paneles);
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (OPTIMIZACIÓN RESPONSIVA Y PANTALLAS POS / TABLETS / PC)
+   ========================================================================== */
+@media (min-width: 768px) {
+    header {
+        display: block;
+    }
+    
+    .logo-area {
+        float: left;
+        line-height: 60px;
+    }
+    
+    .logo-area h2 {
+        padding-top: 0;
+    }
+    
+    nav {
+        float: right;
+    }
+    
+    nav ul {
+        margin: 0;
+        overflow-x: visible;
+    }
+    
+    nav ul li {
+        margin-right: 0;
+        margin-left: 4px;
+    }
+    
+    .nav-link {
+        padding: 20px 24px;
+        border-radius: 0;
+    }
+    
+    header::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .card {
+        margin-bottom: 0;
+    }
+    
+    .soporte-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .soporte-card {
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .pos-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 20px;
+        align-items: start;
+    }
+    
+    .pos-izquierda {
+        margin-bottom: 0;
+    }
+    
+    .favoritos-grid button {
+        width: calc(25% - 8px);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

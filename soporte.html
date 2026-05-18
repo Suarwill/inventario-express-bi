@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrausTech - Sistema de Inventario Exprés & BI</title>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    
+    <script src="js/componentes.js" defer></script>
+    
+    <script src="js/seguridad.js" defer></script>
+    <script src="js/db.js" defer></script>
+    <script src="js/ventas.js" defer></script>
+    <script src="js/inventario.js" defer></script>
+    <script src="js/bi.js" defer></script>
+    <script src="js/caja.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+
+<body>
+
+    <div id="app-container">
+        
+        <main-header></main-header>
+
+        <main>
+            <section id="sec-soporte" class="app-section">
+                <div class="soporte-container">
+                    <div class="soporte-card">
+                        <h3>Respaldo de Datos (Anti-Robo)</h3>
+                        <button type="button" class="btn-accion" id="btn-backup-export">Generar Copia de Seguridad (.json)</button>
+                        <button type="button" class="btn-accion" id="btn-backup-import">Restaurar Copia de Seguridad</button>
+                    </div>
+                    <div class="soporte-card">
+                        <h3>Contabilidad (Excel)</h3>
+                        <button type="button" class="btn-accion" id="btn-csv-ventas">Exportar Ventas del Mes (.csv)</button>
+                        <button type="button" class="btn-accion" id="btn-csv-inventario">Exportar Inventario Actual (.csv)</button>
+                    </div>
+                    <div class="soporte-card">
+                        <h3>Soporte Técnico</h3>
+                        <button type="button" class="btn-whatsapp" id="btn-soporte-wa">💬 Contactar por WhatsApp</button>
+                        <button type="button" class="btn-email" id="btn-soporte-email">✉️ Enviar Ticket de Soporte</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <main-footer></main-footer>
+
+    </div>
+
+    <div id="bloqueo-licencia" style="display:none;"></div>
+
+</body>
+</html>
