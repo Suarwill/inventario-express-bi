@@ -164,7 +164,6 @@ window.FrausDB = {
                     const productoExistente = e.target.result;
 
                     if (productoExistente) {
-                        productoExistente.stock += item.cantidad;
                         productoExistente.precio_costo = item.precioNetoUnitario;
                         productoExistente.descripcion = item.descripcion;
                         productoExistente.categoria = item.categoria;
@@ -176,7 +175,6 @@ window.FrausDB = {
                             descripcion: item.descripcion,
                             precio_costo: item.precioNetoUnitario,
                             precio_venta: Math.ceil(item.precioNetoUnitario * 1.3),
-                            stock: item.cantidad,
                             categoria: item.categoria,
                             subcategoria: item.subcategoria
                         });
@@ -207,6 +205,7 @@ window.FrausDB = {
             procesarSiguienteProducto();
         });
     },
+
     consultarProductoPorSku(sku) {
         return new Promise((resolve) => {
             if (!dbInstancia) {
