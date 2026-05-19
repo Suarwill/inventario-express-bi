@@ -13,6 +13,11 @@ window.CONFIG_CLIENTE = {
     interfaz: {
         colorFondo: "#12141c",
         accentColor: "#3b82f6"
+    },
+    administrador: {
+        empresa: "Fraustech",
+        celular: "56959510900",
+        email:"wsuar3z@gmail.com",
     }
 };
 

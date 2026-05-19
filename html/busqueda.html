@@ -1,0 +1,21 @@
+<div id="modal-buscar-producto" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:10000; justify-content:center; align-items:center;">
+    <div style="background:#1a1d29; width:90%; max-width:600px; padding:20px; border-radius:10px; border:1px solid #2e344d; color:#fff;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0; color:#3b82f6;">🔍 Buscador de Productos Existentes</h3>
+            <button type="button" id="modal-cerrar" style="background:transparent; border:none; color:#ef4444; font-size:20px; cursor:pointer;">✕</button>
+        </div>
+        <input type="text" id="modal-input-filtro" placeholder="Escribe el nombre o término a buscar (Ej: ajo)..." style="width:100%; padding:10px; background:#0d0f14; border:1px solid #2e344d; color:#fff; border-radius:6px; margin-bottom:15px; font-size:15px;">
+        <div style="max-height:300px; overflow-y:auto; background:#0d0f14; border-radius:6px; border:1px solid #2e344d;">
+            <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                <thead>
+                    <tr style="background:#1a1d29; text-align:left; color:#94a3b8; border-bottom:1px solid #2e344d;">
+                        <th style="padding:10px;">SKU</th>
+                        <th style="padding:10px;">Descripción</th>
+                        <th style="padding:10px; text-align:center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="modal-tabla-resultados"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

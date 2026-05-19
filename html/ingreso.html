@@ -1,0 +1,69 @@
+<div style="max-width: 1100px; margin: 20px auto; padding: 25px; background: #1a1d29; border-radius: 12px; color: #fff;">
+    <h2 style="margin-top:0; margin-bottom:20px; font-size:20px; color:#3b82f6;">📥 Registro de Entrada / Compra Multilínea</h2>
+    
+    <form id="form-ingreso-producto">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:15px; margin-bottom:25px; background:#0d0f14; padding:15px; border-radius:8px; border:1px solid #2e344d;">
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold; font-size:14px;">Tipo Documento:</label>
+                <select id="ingreso-tipo" style="width:100%; padding:10px; background:#1a1d29; border:1px solid #2e344d; color:#fff; border-radius:6px;">
+                    <option value="FACTURA">Factura (FE)</option>
+                    <option value="BOLETA">Boleta (BE)</option>
+                    <option value="ENTRADA">Entrada Simple / Ajuste (EB)</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold; font-size:14px;">Fecha Movimiento:</label>
+                <input type="date" id="ingreso-fecha" style="width:100%; padding:10px; background:#1a1d29; border:1px solid #2e344d; color:#fff; border-radius:6px;">
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:bold; font-size:14px;">Folio Documento:</label>
+                <input type="text" id="ingreso-folio" placeholder="Ej: 1024" required style="width:100%; padding:10px; background:#1a1d29; border:1px solid #2e344d; color:#fff; border-radius:6px;">
+            </div>
+            <div>
+                <label id="label-origen" style="display:block; margin-bottom:5px; font-weight:bold; font-size:14px;">Proveedor / Origen:</label>
+                <input type="text" id="ingreso-origen" required placeholder="Ej: Distribuidora Central" style="width:100%; padding:10px; background:#1a1d29; border:1px solid #2e344d; color:#fff; border-radius:6px;">
+            </div>
+        </div>
+
+        <div style="overflow-x:auto; margin-bottom:20px;">
+            <table style="width:100%; border-collapse:collapse; min-width:950px;" id="tabla-lineas-abastecimiento">
+                <thead>
+                    <tr style="border-bottom:2px solid #2e344d; text-align:left; color:#94a3b8; font-size:14px;">
+                        <th style="padding:10px; width:5%; text-align:center;">🔍</th>
+                        <th style="padding:10px; width:14%;">SKU</th>
+                        <th style="padding:10px; width:8%;">Cant.</th>
+                        <th style="padding:10px; width:21%;">Descripción</th>
+                        <th style="padding:10px; width:13%;">Categoría</th>
+                        <th style="padding:10px; width:13%;">Subcat.</th>
+                        <th style="padding:10px; width:12%;">P. Unitario ($)</th>
+                        <th style="padding:10px; width:11%;">P. Neto ($)</th>
+                        <th style="padding:10px; width:5%; text-align:center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="contenedor-lineas-productos"></tbody>
+            </table>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-top:20px; padding-top:20px; border-top:1px solid #2e344d;">
+            <div>
+                <button type="button" id="btn-agregar-fila" style="background:#1e293b; color:#3b82f6; border:1px solid #3b82f6; padding:10px 15px; border-radius:6px; font-weight:bold; cursor:pointer;">➕ Agregar Fila</button>
+            </div>
+            <div style="width:300px; background:#0d0f14; padding:15px; border-radius:8px; border:1px solid #2e344d; font-size:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span style="color:#94a3b8;">Total Neto:</span>
+                    <span id="resumen-neto" style="font-weight:bold;">$0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span style="color:#94a3b8;">IVA (19%):</span>
+                    <span id="resumen-iva" style="font-weight:bold;">$0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid #2e344d; padding-top:8px; font-size:18px;">
+                    <span style="color:#3b82f6; font-weight:bold;">Total Final:</span>
+                    <span id="resumen-total" style="color:#3b82f6; font-weight:bold;">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" style="width:100%; margin-top:25px; background:#3b82f6; color:#fff; padding:14px; border:none; border-radius:6px; font-weight:bold; font-size:16px; cursor:pointer;">💾 Procesar Ingreso a Stock</button>
+    </form>
+</div>
