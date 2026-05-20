@@ -9,12 +9,11 @@
     <script src="config/cliente.js"></script>
     <script src="js/componentes.js" defer></script>
         
-    <script src="js/seguridad.js" defer></script>
     <script src="js/db.js" defer></script>
-    <script src="js/ventas.js" defer></script>
+    <script src="js/abastecimiento.js" defer></script>
+    <script src="js/salidas.js" defer></script>
+    <script src="js/productos.js" defer></script>
     <script src="js/inventario.js" defer></script>
-    <script src="js/bi.js" defer></script>
-    <script src="js/caja.js" defer></script>
     <script src="js/app.js" defer></script>
 </head>
 
@@ -28,11 +27,11 @@
             <section id="sec-inventario" class="app-section">
                 <div class="sub-tabs">
                     <button class="sub-tab-btn active" data-sub="sub-abastecer">Ingresar</button>
-                    <button class="sub-tab-btn" data-sub="sub-mermas">Retiro / Merma</button>
+                    <button class="sub-tab-btn" data-sub="sub-salidas">Retiro / Merma</button>
                     <button class="sub-tab-btn" data-sub="sub-maestro">Productos</button>
                 </div>
                 <div class="sub-content" id="sub-abastecer"></div>
-                <div class="sub-content" id="sub-mermas" style="display:none;"></div>
+                <div class="sub-content" id="sub-salidas" style="display:none;"></div>
                 <div class="sub-content" id="sub-maestro" style="display:none;"></div>
             </section>
         </main>
