@@ -41,11 +41,11 @@ async function renderizarMaestroProductos(contenedor) {
                 const sku = prod.codigo;
 
                 const ingresosSku = historialMovimientos
-                    .filter(m => m.sku === sku && (m.tipo_movimiento === 'COMPRA' || m.tipo_movimiento === 'ENTRADA'))
+                    .filter(m => m.sku === sku && (m.tipo_movimiento === 'BOLETA' || m.tipo_movimiento === 'FACTURA' || m.tipo_movimiento === 'ENTRADA'))
                     .reduce((acc, curr) => acc + (curr.cantidad || 0), 0);
 
                 const egresosMovimientosSku = historialMovimientos
-                    .filter(m => m.sku === sku && (m.tipo_movimiento === 'MERMA' || m.tipo_movimiento === 'RETIRO'))
+                    .filter(m => m.sku === sku && (m.tipo_movimiento === 'MERMA' || m.tipo_movimiento === 'RETIRO'|| m.tipo_movimiento === 'VENTA'))
                     .reduce((acc, curr) => acc + (curr.cantidad || 0), 0);
 
                 let egresosVentasSku = 0;

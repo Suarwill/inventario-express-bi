@@ -311,7 +311,7 @@ tr:last-child td {
 .btn-pago {
     display: block;
     width: 100%;
-    margin-bottom: 10px;
+    margin: 10px;
     padding: 16px;
     border: none;
     border-radius: 10px;

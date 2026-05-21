@@ -223,6 +223,38 @@ window.FrausDB = {
                 resolve(null);
             };
         });
+    },
+
+    registrarVenta(datosVenta) {
+        return new Promise((resolve) => {
+            const transaccion = dbInstancia.transaction(['ventas', 'historial_inventario'], 'readwrite');
+            const almacenVentas = transaccion.objectStore('ventas');
+            const almacenHistorial = transaccion.objectStore('historial_inventario');
+
+            almacenVentas.add({
+                fecha: datosVenta.fecha,
+                items: datosVenta.items,
+                neto: datosVenta.neto,
+                iva: datosVenta.iva,
+                total: datosVenta.total,
+                metodo_pago: datosVenta.metodo_pago
+            });
+
+            datosVenta.items.forEach(item => {
+                almacenHistorial.add({
+                    folio: `VTA-${Date.now().toString().slice(-6)}`,
+                    sku: item.sku,
+                    tipo_movimiento: 'VENTA',
+                    origen: 'Punto de Venta',
+                    cantidad: item.cantidad,
+                    precio_costo_unitario: 0,
+                    fecha: datosVenta.fecha
+                });
+            });
+
+            transaccion.oncomplete = () => resolve(true);
+            transaccion.onerror = () => resolve(false);
+        });
     }
 };
 
