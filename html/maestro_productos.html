@@ -1,20 +1,20 @@
-<div style="max-width: 1100px; margin: 20px auto; padding: 25px; background: #1a1d29; border-radius: 12px; color: #fff;">
+<div style="max-width: 1100px; margin: 20px auto; padding: 25px; background: var(--bg-paneles); border-radius: 12px; border: 1px solid var(--borde);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0; font-size: 20px; color: #3b82f6;">Listado de Productos</h2>
-        <button type="button" id="btn-recargar-maestro" style="background: #1e293b; color: #3b82f6; border: 1px solid #3b82f6; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">🔄 Actualizar Datos</button>
+        <h2 style="margin: 0; font-size: 20px; color: var(--texto-principal);">Listado de Productos</h2>
+        <button type="button" id="btn-recargar-maestro" style="background: var(--bg-interacciones); color: var(--texto-principal); border: 1px solid var(--borde); padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">🔄 Actualizar Datos</button>
     </div>
 
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse; min-width: 950px;" id="tabla-maestro-productos">
             <thead>
-                <tr style="border-bottom: 2px solid #2e344d; text-align: left; color: #94a3b8; font-size: 14px;">
+                <tr style="border-bottom: 2px solid var(--borde); text-align: left; color: var(--texto-secundario); font-size: 14px;">
                     <th style="padding: 10px; width: 15%;">SKU</th>
                     <th style="padding: 10px; width: 30%;">Descripción</th>
                     <th style="padding: 10px; width: 15%;">Categoría</th>
                     <th style="padding: 10px; width: 10%; text-align: center;">Stock Neto</th>
-                    <th style="padding: 10px; width: 12%; text-align: right;">Último Costo ($)</th>
-                    <th style="padding: 10px; width: 13%; text-align: right;">Precio Venta ($)</th>
-                    <th style="padding: 10px; width: 5%; text-align: center;">Estado</th>
+                    <th style="padding: 10px; width: 15%; text-align: right;">Costo Promedio</th>
+                    <th style="padding: 10px; width: 10%; text-align: right;">Precio Venta ($)</th>
+                    <th style="padding: 10px; width: 5%; text-align: center;">Acción</th>
                 </tr>
             </thead>
             <tbody id="contenedor-filas-maestro"></tbody>

@@ -1,0 +1,22 @@
+:root {
+    --bg-principal: #588bf9;
+    --bg-paneles: #004EBB;
+    --bg-interacciones: #73A2FB;
+    --bg-campos: #b8d1ff;
+    
+    --texto-principal: #FFFFFF;
+    --texto-secundario: #D6E4FF;
+    --texto-oscuro: #002266;
+    
+    --accent: #FF9900;
+    --accent-hover: #FFB33B;
+    --exito: #319B12;
+    --exito-hover: #267A0E;
+    --alerta: #E04343;
+    --alerta-hover: #B82C2C;
+    --advertencia: #FF9900;
+    
+    --borde: #004EBB;   
+    --sombra: rgba(0, 34, 102, 0.35);
+    --fuente: "Tahoma", system-ui, -apple-system, sans-serif;
+}

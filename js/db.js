@@ -37,225 +37,232 @@ const abrirBaseDatos = () => {
     });
 };
 
-window.FrausDB = {
-    async inicializar() {
-        try {
-            await abrirBaseDatos();
-            window.dispatchEvent(new CustomEvent('db-ready'));
-        } catch (error) {
-            console.error("[IndexedDB] Error crítico en la inicialización:", error);
+const obtenerTotalesVentasTurnoActual = () => {
+    return new Promise((resolve) => {
+        if (!dbInstancia) {
+            resolve({ efectivo: 0, tarjeta: 0, transferencia: 0 });
+            return;
         }
-    },
 
-    obtenerEstadoCaja() {
-        return new Promise((resolve, reject) => {
-            const transaccion = dbInstancia.transaction(['caja'], 'readonly');
-            const almacen = transaccion.objectStore('caja');
-            const request = almacen.openCursor(null, 'prev');
+        const transaccion = dbInstancia.transaction(['ventas', 'caja'], 'readonly');
+        const almacenVentas = transaccion.objectStore('ventas');
+        const almacenCaja = transaccion.objectStore('caja');
 
-            request.onsuccess = (e) => {
-                const cursor = e.target.result;
-                if (cursor) {
-                    const registro = cursor.value;
-                    if (registro.estado === 'abierto') {
-                        resolve(registro);
-                        return;
-                    }
-                }
-                resolve(null);
-            };
+        const peticionCaja = almacenCaja.getAll();
 
-            request.onerror = (e) => reject(e.target.error);
-        });
-    },
+        peticionCaja.onsuccess = (e) => {
+            const registrosCaja = e.target.result || [];
+            const turnoActivo = registrosCaja.find(c => c.estado === 'ABIERTO' || !c.fecha_cierre);
 
-    abrirCaja(monto) {
-        return new Promise((resolve, reject) => {
-            const transaccion = dbInstancia.transaction(['caja'], 'readwrite');
-            const almacen = transaccion.objectStore('caja');
-
-            const nuevaCaja = {
-                fecha_apertura: new Date().toISOString(),
-                fecha_cierre: null,
-                monto_apertura: monto,
-                monto_cierre_real: null,
-                estado: 'abierto'
-            };
-
-            const request = almacen.add(nuevaCaja);
-
-            request.onsuccess = () => resolve(true);
-            request.onerror = (e) => reject(e.target.error);
-        });
-    },
-
-    calcularTotalesDesde(fechaApertura) {
-        return new Promise((resolve, reject) => {
-            const transaccion = dbInstancia.transaction(['ventas'], 'readonly');
-            const almacen = transaccion.objectStore('ventas');
-            const request = almacen.openCursor();
-
-            let efectivo = 0;
-            let tarjeta = 0;
-            let transferencia = 0;
-            const fApertura = new Date(fechaApertura);
-
-            request.onsuccess = (e) => {
-                const cursor = e.target.result;
-                if (cursor) {
-                    const venta = cursor.value;
-                    if (new Date(venta.fecha) >= fApertura) {
-                        if (venta.metodo_pago === 'Efectivo') efectivo += venta.total;
-                        if (venta.metodo_pago === 'Tarjeta') tarjeta += venta.total;
-                        if (venta.metodo_pago === 'Transferencia') transferencia += venta.total;
-                    }
-                    cursor.continue();
-                } else {
-                    resolve({ efectivo, tarjeta, transferencia });
-                }
-            };
-
-            request.onerror = (e) => reject(e.target.error);
-        });
-    },
-
-    cerrarCaja(id, montoReal) {
-        return new Promise((resolve, reject) => {
-            const transaccion = dbInstancia.transaction(['caja'], 'readwrite');
-            const almacen = transaccion.objectStore('caja');
-            const requestGet = almacen.get(id);
-
-            requestGet.onsuccess = (e) => {
-                const registro = e.target.result;
-                if (registro) {
-                    registro.monto_cierre_real = montoReal;
-                    registro.fecha_cierre = new Date().toISOString();
-                    registro.estado = 'cerrado';
-
-                    const requestUpdate = almacen.put(registro);
-                    requestUpdate.onsuccess = () => resolve(true);
-                    requestUpdate.onerror = (err) => reject(err.target.error);
-                } else {
-                    resolve(false);
-                }
-            };
-
-            requestGet.onerror = (e) => reject(e.target.error);
-        });
-    },
-
-    registrarIngresoMercaderiaMultilinea(documento) {
-        return new Promise((resolve) => {
-            const transaccion = dbInstancia.transaction(['productos', 'historial_inventario'], 'readwrite');
-            const almacenProductos = transaccion.objectStore('productos');
-            const almacenHistorial = transaccion.objectStore('historial_inventario');
-
-            let index = 0;
-
-            const procesarSiguienteProducto = () => {
-                if (index >= documento.productos.length) {
-                    return;
-                }
-
-                const item = documento.productos[index];
-                const peticionBusqueda = almacenProductos.get(item.sku);
-
-                peticionBusqueda.onsuccess = (e) => {
-                    const productoExistente = e.target.result;
-
-                    if (productoExistente) {
-                        productoExistente.precio_costo = item.precioNetoUnitario;
-                        productoExistente.descripcion = item.descripcion;
-                        productoExistente.categoria = item.categoria;
-                        productoExistente.subcategoria = item.subcategoria;
-                        almacenProductos.put(productoExistente);
-                    } else {
-                        almacenProductos.add({
-                            codigo: item.sku,
-                            descripcion: item.descripcion,
-                            precio_costo: item.precioNetoUnitario,
-                            precio_venta: Math.ceil(item.precioNetoUnitario * 1.3),
-                            categoria: item.categoria,
-                            subcategoria: item.subcategoria
-                        });
-                    }
-
-                    almacenHistorial.add({
-                        folio: documento.folio,
-                        sku: item.sku,
-                        tipo_movimiento: documento.tipo,
-                        origen: documento.origen, 
-                        cantidad: item.cantidad,
-                        precio_costo_unitario: item.precioNetoUnitario,
-                        fecha: documento.fecha
-                    });
-
-                    index++;
-                    procesarSiguienteProducto();
-                };
-
-                peticionBusqueda.onerror = () => {
-                    transaccion.abort();
-                };
-            };
-
-            transaccion.oncomplete = () => resolve(true);
-            transaccion.onerror = () => resolve(false);
-
-            procesarSiguienteProducto();
-        });
-    },
-
-    consultarProductoPorSku(sku) {
-        return new Promise((resolve) => {
-            if (!dbInstancia) {
-                resolve(null);
+            if (!turnoActivo) {
+                resolve({ efectivo: 0, tarjeta: 0, transferencia: 0 });
                 return;
             }
-            const transaccion = dbInstancia.transaction(['productos'], 'readonly');
-            const almacen = transaccion.objectStore('productos');
-            const peticion = almacen.get(sku);
 
-            peticion.onsuccess = (e) => {
-                resolve(e.target.result || null);
-            };
-            peticion.onerror = () => {
-                resolve(null);
-            };
-        });
-    },
+            const fechaAperturaTurno = new Date(turnoActivo.fecha_apertura);
+            const peticionVentas = almacenVentas.getAll();
 
-    registrarVenta(datosVenta) {
-        return new Promise((resolve) => {
-            const transaccion = dbInstancia.transaction(['ventas', 'historial_inventario'], 'readwrite');
-            const almacenVentas = transaccion.objectStore('ventas');
-            const almacenHistorial = transaccion.objectStore('historial_inventario');
+            peticionVentas.onsuccess = (ev) => {
+                const todasLasVentas = ev.target.result || [];
+                const totales = { efectivo: 0, tarjeta: 0, transferencia: 0 };
 
-            almacenVentas.add({
-                fecha: datosVenta.fecha,
-                items: datosVenta.items,
-                neto: datosVenta.neto,
-                iva: datosVenta.iva,
-                total: datosVenta.total,
-                metodo_pago: datosVenta.metodo_pago
-            });
+                todasLasVentas.forEach(venta => {
+                    const fechaVenta = new Date(venta.fecha);
+                    if (fechaVenta >= fechaAperturaTurno) {
+                        const metodo = (venta.metodo_pago || '').toLowerCase().trim();
+                        const monto = parseInt(venta.total) || 0;
 
-            datosVenta.items.forEach(item => {
-                almacenHistorial.add({
-                    folio: `VTA-${Date.now().toString().slice(-6)}`,
-                    sku: item.sku,
-                    tipo_movimiento: 'VENTA',
-                    origen: 'Punto de Venta',
-                    cantidad: item.cantidad,
-                    precio_costo_unitario: 0,
-                    fecha: datosVenta.fecha
+                        if (metodo === 'efectivo') {
+                            totales.efectivo += monto;
+                        } else if (metodo === 'tarjeta') {
+                            totales.tarjeta += monto;
+                        } else if (metodo === 'transferencia' || metodo === 'transf.') {
+                            totales.transferencia += monto;
+                        }
+                    }
                 });
-            });
 
-            transaccion.oncomplete = () => resolve(true);
-            transaccion.onerror = () => resolve(false);
-        });
+                resolve(totales);
+            };
+
+            peticionVentas.onerror = () => resolve({ efectivo: 0, tarjeta: 0, transferencia: 0 });
+        };
+
+        peticionCaja.onerror = () => resolve({ efectivo: 0, tarjeta: 0, transferencia: 0 });
+    });
+};
+
+const inicializar = async () => {
+    try {
+        await abrirBaseDatos();
+        window.dispatchEvent(new CustomEvent('db-ready'));
+    } catch (error) {
+        console.error("Fallo crítico en inicialización de DB:", error);
     }
+};
+
+const obtenerEstadoCaja = () => {
+    return new Promise((resolve) => {
+        if (!dbInstancia) return resolve(null);
+        const tx = dbInstancia.transaction(['caja'], 'readonly');
+        const store = tx.objectStore('caja');
+        const req = store.getAll();
+        req.onsuccess = () => {
+            const registros = req.result || [];
+            const abierta = registros.find(c => c.estado === 'ABIERTO' || !c.fecha_cierre);
+            resolve(abierta || null);
+        };
+        req.onerror = () => resolve(null);
+    });
+};
+
+const abrirCaja = (datosApertura) => {
+    return new Promise((resolve) => {
+        if (!dbInstancia) return resolve(false);
+        const tx = dbInstancia.transaction(['caja'], 'readwrite');
+        const store = tx.objectStore('caja');
+        const req = store.add(datosApertura);
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => resolve(false);
+    });
+};
+
+const cerrarCaja = (datosCierre) => {
+    return new Promise((resolve) => {
+        if (!dbInstancia) return resolve(false);
+        const tx = dbInstancia.transaction(['caja'], 'readwrite');
+        const store = tx.objectStore('caja');
+        const reqGetAll = store.getAll();
+
+        reqGetAll.onsuccess = () => {
+            const registros = reqGetAll.result || [];
+            const abierta = registros.find(c => c.estado === 'ABIERTO' || !c.fecha_cierre);
+            if (!abierta) return resolve(false);
+
+            const registroActualizado = { ...abierta, ...datosCierre };
+            const reqPut = store.put(registroActualizado);
+            reqPut.onsuccess = () => resolve(true);
+            reqPut.onerror = () => resolve(false);
+        };
+        reqGetAll.onerror = () => resolve(false);
+    });
+};
+
+const registrarIngresoMercaderiaMultilinea = (documento) => {
+    return new Promise((resolve) => {
+        if (!dbInstancia) return resolve(false);
+        const transaccion = dbInstancia.transaction(['productos', 'historial_inventario'], 'readwrite');
+        const almacenProductos = transaccion.objectStore('productos');
+        const almacenHistorial = transaccion.objectStore('historial_inventario');
+
+        let index = 0;
+        const procesarSiguienteProducto = () => {
+            if (index >= documento.productos.length) return;
+
+            const item = documento.productos[index];
+            const peticionBusqueda = almacenProductos.get(item.sku);
+
+            peticionBusqueda.onsuccess = (e) => {
+                const productoExistente = e.target.result;
+
+                if (productoExistente) {
+                    if (documento.tipo === 'INGRESO' || documento.tipo === 'COMPRA') {
+                        productoExistente.precio_costo = item.precioNetoUnitario;
+                    }
+                    almacenProductos.put(productoExistente);
+                } else {
+                    almacenProductos.add({
+                        codigo: item.sku,
+                        descripcion: item.descripcion,
+                        categoria: item.categoria,
+                        subcategoria: item.subcategoria || "General",
+                        precio_costo: item.precioNetoUnitario,
+                        precio_venta: 0
+                    });
+                }
+
+                almacenHistorial.add({
+                    folio: documento.folio,
+                    sku: item.sku,
+                    tipo_movimiento: documento.tipo,
+                    origen: documento.origen, 
+                    cantidad: item.cantidad,
+                    precio_costo_unitario: item.precioNetoUnitario,
+                    fecha: documento.fecha
+                });
+
+                index++;
+                procesarSiguienteProducto();
+            };
+
+            peticionBusqueda.onerror = () => {
+                transaccion.abort();
+            };
+        };
+
+        transaccion.oncomplete = () => resolve(true);
+        transaccion.onerror = () => resolve(false);
+
+        procesarSiguienteProducto();
+    });
+};
+
+const consultarProductoPorSku = (sku) => {
+    return new Promise((resolve) => {
+        if (!dbInstancia) {
+            resolve(null);
+            return;
+        }
+        const transaccion = dbInstancia.transaction(['productos'], 'readonly');
+        const almacen = transaccion.objectStore('productos');
+        const peticion = almacen.get(sku);
+
+        peticion.onsuccess = (e) => resolve(e.target.result || null);
+        peticion.onerror = () => resolve(null);
+    });
+};
+
+const registrarVenta = (datosVenta) => {
+    return new Promise((resolve) => {
+        const transaccion = dbInstancia.transaction(['ventas', 'historial_inventario'], 'readwrite');
+        const almacenVentas = transaccion.objectStore('ventas');
+        const almacenHistorial = transaccion.objectStore('historial_inventario');
+
+        almacenVentas.add({
+            fecha: datosVenta.fecha,
+            items: datosVenta.items,
+            neto: datosVenta.neto,
+            iva: datosVenta.iva,
+            total: datosVenta.total,
+            metodo_pago: datosVenta.metodo_pago
+        });
+
+        datosVenta.items.forEach(item => {
+            almacenHistorial.add({
+                folio: `VTA-${Date.now().toString().slice(-6)}`,
+                sku: item.sku,
+                tipo_movimiento: 'VENTA',
+                origen: 'Punto de Venta',
+                cantidad: item.cantidad,
+                precio_costo_unitario: 0,
+                fecha: datosVenta.fecha
+            });
+        });
+
+        transaccion.oncomplete = () => resolve(true);
+        transaccion.onerror = () => resolve(false);
+    });
+};
+
+window.FrausDB = {
+    inicializar,
+    obtenerEstadoCaja,
+    abrirCaja,
+    cerrarCaja,
+    registrarIngresoMercaderiaMultilinea,
+    consultarProductoPorSku,
+    registrarVenta,
+    obtenerTotalesVentasTurnoActual
 };
 
 window.FrausDB.inicializar().catch(console.error);

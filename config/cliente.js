@@ -11,7 +11,7 @@ window.CONFIG_CLIENTE = {
         vencimiento: "2027-12-31"
     },
     interfaz: {
-        colorFondo: "#12141c",
+        colorFondo: "white",
         accentColor: "#3b82f6"
     },
     administrador: {

@@ -1,0 +1,27 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-principal);
+    color: var(--texto-principal);
+    font-family: var(--fuente);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    padding: 15px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
