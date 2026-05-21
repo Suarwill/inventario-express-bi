@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnWhatsApp = document.getElementById('btn-soporte-wa');
     const btnEmail = document.getElementById('btn-soporte-email');
 
-
     if (btnExport) {            btnExport.addEventListener('click', exportarIndexedDBAJSON)         }
     if (btnImport) {            btnImport.addEventListener('click', levantarSelectorImportacion)    }
     
@@ -15,10 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnWhatsApp) {          btnWhatsApp.addEventListener('click', abrirCanalSoporteWhatsApp)    }
     if (btnEmail) {             btnEmail.addEventListener('click', abrirCanalSoporteEmail)          }
-
 });
 
-// CANAL DE SOPORTE: WHATSAPP
 function abrirCanalSoporteWhatsApp() {
     if (!window.CONFIG_CLIENTE || !window.CONFIG_CLIENTE.administrador || !window.CONFIG_CLIENTE.administrador.celular) {
         alert("Error: No se pudo cargar el número de soporte técnico desde la configuración.");
@@ -35,7 +32,6 @@ function abrirCanalSoporteWhatsApp() {
     window.open(urlWhatsApp, '_blank');
 }
 
-// CANAL DE SOPORTE: EMAIL
 function abrirCanalSoporteEmail() {
     if (!window.CONFIG_CLIENTE || !window.CONFIG_CLIENTE.administrador || !window.CONFIG_CLIENTE.administrador.email) {
         alert("Error: No se pudo cargar el correo electrónico de soporte técnico desde la configuración.");
@@ -66,7 +62,6 @@ function abrirCanalSoporteEmail() {
     window.location.href = urlMailto;
 }
 
-// REPORTE: VENTAS
 function generarCSVVentas() {
     const DB_NAME = 'FrausTechPOS';
     const request = indexedDB.open(DB_NAME);
@@ -90,20 +85,69 @@ function generarCSVVentas() {
                 return;
             }
 
-            const cabeceras = ['id', 'fecha', 'total', 'metodo_pago'];
+            const cabeceras = [
+                'ID Venta', 
+                'Fecha Pasada', 
+                'Metodo Pago', 
+                'SKU Producto', 
+                'Descripcion', 
+                'Cantidad', 
+                'Precio Unitario', 
+                'Subtotal Linea',
+                'Total Boleta'
+            ];
             
-            const filas = registros.map(obj => 
-                cabeceras.map(campo => {
-                    let valor = obj[campo] === undefined || obj[campo] === null ? "" : obj[campo];
-                    if (typeof valor === 'string' && (valor.includes(',') || valor.includes('\n') || valor.includes('"'))) {
-                        valor = `"${valor.replace(/"/g, '""')}"`;
-                    }
-                    return valor;
-                }).join(',')
-            );
+            const filas = [];
+
+            registros.forEach(venta => {
+                const idVenta = venta.id || "";
+                const fecha = venta.fecha || "";
+                const metodo = venta.metodo_pago || "";
+                const totalBoleta = venta.total || 0;
+
+                const listaArticulos = venta.items || venta.productos || [];
+
+                if (Array.isArray(listaArticulos) && listaArticulos.length > 0) {
+                    listaArticulos.forEach(item => {
+                        const sku = item.sku || item.codigo || "N/A";
+                        let descripcion = item.descripcion || "Sin descripción";
+                        const cantidad = parseInt(item.cantidad) || 0;
+                        const precio = parseInt(item.precio) || parseInt(item.precio_venta) || 0;
+                        const subtotal = cantidad * precio;
+
+                        if (descripcion.includes(',') || descripcion.includes('\n') || descripcion.includes('"')) {
+                            descripcion = `"${descripcion.replace(/"/g, '""')}"`;
+                        }
+
+                        filas.push([
+                            idVenta,
+                            fecha,
+                            metodo,
+                            sku,
+                            descripcion,
+                            cantidad,
+                            precio,
+                            subtotal,
+                            totalBoleta
+                        ].join(','));
+                    });
+                } else {
+                    filas.push([
+                        idVenta,
+                        fecha,
+                        metodo,
+                        "N/A",
+                        "Venta sin articulos desglosados",
+                        0,
+                        0,
+                        0,
+                        totalBoleta
+                    ].join(','));
+                }
+            });
 
             const contenidoCSV = [cabeceras.join(','), ...filas].join('\n');
-            descargarPlantillaCSV(contenidoCSV, 'reporte_ventas');
+            descargarPlantillaCSV(contenidoCSV, 'reporte_ventas_detallado');
         };
 
         peticionGetAll.onerror = (evt) => {
@@ -116,7 +160,6 @@ function generarCSVVentas() {
     };
 }
 
-// REPORTE: INVENTARIO
 function generarCSVInventario() {
     const DB_NAME = 'FrausTechPOS';
     const request = indexedDB.open(DB_NAME);
@@ -124,40 +167,80 @@ function generarCSVInventario() {
     request.onsuccess = (e) => {
         const db = e.target.result;
         
-        if (!db.objectStoreNames.contains('productos')) {
-            alert("El almacén de productos aún no ha sido creado.");
+        if (!db.objectStoreNames.contains('productos') || !db.objectStoreNames.contains('historial_inventario') || !db.objectStoreNames.contains('ventas')) {
+            alert("Los almacenes necesarios para calcular existencias no están completos.");
             return;
         }
 
-        const transaccion = db.transaction(['productos'], 'readonly');
-        const almacen = transaccion.objectStore('productos');
-        const peticionGetAll = almacen.getAll();
+        const transaccion = db.transaction(['productos', 'historial_inventario', 'ventas'], 'readonly');
+        const storeProductos = transaccion.objectStore('productos');
+        const storeHistorial = transaccion.objectStore('historial_inventario');
+        const storeVentas = transaccion.objectStore('ventas');
 
-        peticionGetAll.onsuccess = (evt) => {
-            const registros = evt.target.result;
-            if (registros.length === 0) {
+        const reqProd = storeProductos.getAll();
+        const reqHist = storeHistorial.getAll();
+        const reqVent = storeVentas.getAll();
+
+        let productosBase = [];
+        let historialMovimientos = [];
+        let historialVentas = [];
+
+        reqProd.onsuccess = () => { productosBase = reqProd.result || []; };
+        reqHist.onsuccess = () => { historialMovimientos = reqHist.result || []; };
+        reqVent.onsuccess = () => { historialVentas = reqVent.result || []; };
+
+        transaccion.oncomplete = () => {
+            if (productosBase.length === 0) {
                 alert("El catálogo de inventario está vacío. No hay productos para exportar.");
                 return;
             }
 
             const cabeceras = ['codigo', 'descripcion', 'precio_costo', 'precio_venta', 'stock', 'categoria'];
+            
+            const filas = productosBase.map(prod => {
+                const sku = prod.codigo;
 
-            const filas = registros.map(obj => 
-                cabeceras.map(campo => {
-                    let valor = obj[campo] === undefined || obj[campo] === null ? "" : obj[campo];
+                const ingresosSku = historialMovimientos
+                    .filter(m => m.sku === sku && (m.tipo_movimiento === 'BOLETA' || m.tipo_movimiento === 'FACTURA' || m.tipo_movimiento === 'ENTRADA'))
+                    .reduce((acc, curr) => acc + (parseInt(curr.cantidad) || 0), 0);
+
+                const egresosMovimientosSku = historialMovimientos
+                    .filter(m => m.sku === sku && (m.tipo_movimiento === 'MERMA' || m.tipo_movimiento === 'RETIRO'))
+                    .reduce((acc, curr) => acc + (parseInt(curr.cantidad) || 0), 0);
+
+                let egresosVentasSku = 0;
+                historialVentas.forEach(v => {
+                    const listaArticulos = v.productos || v.items || [];
+                    if (Array.isArray(listaArticulos)) {
+                        listaArticulos.forEach(p => {
+                            if (p.sku === sku || p.codigo === sku) {
+                                egresosVentasSku += (parseInt(p.cantidad) || 0);
+                            }
+                        });
+                    }
+                });
+
+                const stockNetoCalculado = ingresosSku - (egresosMovimientosSku + egresosVentasSku);
+
+                return cabeceras.map(campo => {
+                    if (campo === 'stock') {
+                        return stockNetoCalculado;
+                    }
+                    
+                    let valor = prod[campo] === undefined || prod[campo] === null ? "" : prod[campo];
                     if (typeof valor === 'string' && (valor.includes(',') || valor.includes('\n') || valor.includes('"'))) {
                         valor = `"${valor.replace(/"/g, '""')}"`;
                     }
                     return valor;
-                }).join(',')
-            );
+                }).join(',');
+            });
 
             const contenidoCSV = [cabeceras.join(','), ...filas].join('\n');
-            descargarPlantillaCSV(contenidoCSV, 'maestro_inventario');
+            descargarPlantillaCSV(contenidoCSV, 'maestro_inventario_calculado');
         };
 
-        peticionGetAll.onerror = (evt) => {
-            console.error("Error al extraer el catálogo de productos:", evt.target.error);
+        transaccion.onerror = (evt) => {
+            console.error("Error al extraer registros cruzados para inventario:", evt.target.error);
         };
     };
 
@@ -165,6 +248,7 @@ function generarCSVInventario() {
         console.error("Error al conectar con IndexedDB para reporte de inventario:", e.target.error);
     };
 }
+
 function descargarPlantillaCSV(textoCSV, prefijoNombre) {
     const blob = new Blob(['\uFEFF' + textoCSV], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -173,7 +257,7 @@ function descargarPlantillaCSV(textoCSV, prefijoNombre) {
     const fecha = new Date().toISOString().split('T')[0];
 
     elementoLink.setAttribute("href", url);
-    elementoLink.setAttribute("download", `fraustech_${prefijoNombre}_${fecha}.csv`);
+    elementoLink.setAttribute("download", `database_${prefijoNombre}_${fecha}.csv`);
     elementoLink.style.visibility = 'hidden';
 
     document.body.appendChild(elementoLink);
@@ -182,7 +266,6 @@ function descargarPlantillaCSV(textoCSV, prefijoNombre) {
     URL.revokeObjectURL(url);
 }
 
-// EXPORTACION DE DATABASE
 function exportarIndexedDBAJSON() {
     const DB_NAME = 'FrausTechPOS';
     const request = indexedDB.open(DB_NAME);
@@ -241,7 +324,6 @@ function descargarArchivoJSON(objetoDatos) {
     document.body.removeChild(elementoDescarga);
 }
 
-// IMPORTACION DE DATABASE
 function levantarSelectorImportacion() {
     const confirmar = confirm("ADVERTENCIA: Al restaurar esta copia de seguridad, se reemplazarán por completo todos los datos actuales de inventario, ventas y cajas. ¿Desea continuar?");
     if (!confirmar) return;

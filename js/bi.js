@@ -27,21 +27,28 @@ async function calcularCapitalRetenido() {
     if (!elemento) return;
 
     try {
+        console.log("=== INICIANDO DEBUG DE CAPITAL RETENIDO ===");
+        
         const productosBase = await obtenerDatosDeAlmacen('productos');
         const historialMovimientos = await obtenerDatosDeAlmacen('historial_inventario') || [];
         const historialVentas = await obtenerDatosDeAlmacen('ventas') || [];
+
+        console.log(`Datos cargados desde IndexedDB:
+        - Productos base: ${productosBase.length}
+        - Movimientos historial: ${historialMovimientos.length}
+        - Ventas totales: ${historialVentas.length}`);
 
         let capitalTotal = 0;
 
         productosBase.forEach(prod => {
             const sku = prod.codigo;
-
+            
             const ingresosSku = historialMovimientos
-                .filter(m => m.sku === sku && (m.tipo_movimiento === 'MERMA' || m.tipo_movimiento === 'RETIRO' || m.tipo_movimiento === 'VENTA'))
+                .filter(m => m.sku === sku && (m.tipo_movimiento === 'BOLETA' || m.tipo_movimiento === 'FACTURA' || m.tipo_movimiento === 'ENTRADA'))
                 .reduce((acc, curr) => acc + (curr.cantidad || 0), 0);
 
             const egresosMovimientosSku = historialMovimientos
-                .filter(m => m.sku === sku && (m.tipo_movimiento === 'BOLETA' || m.tipo_movimiento === 'FACTURA' || m.tipo_movimiento === 'ENTRADA'))
+                .filter(m => m.sku === sku && (m.tipo_movimiento === 'MERMA' || m.tipo_movimiento === 'RETIRO'))
                 .reduce((acc, curr) => acc + (curr.cantidad || 0), 0);
 
             let egresosVentasSku = 0;
@@ -58,19 +65,31 @@ async function calcularCapitalRetenido() {
 
             const stockNetoReal = ingresosSku - (egresosMovimientosSku + egresosVentasSku);
 
+            const comprasProducto = historialMovimientos
+                .filter(m => m.sku === sku && m.tipo_movimiento === 'COMPRA')
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            const ultimoCostoCompra = comprasProducto.length > 0 
+                ? (parseInt(comprasProducto[0].precio_costo_unitario) || parseInt(comprasProducto[0].precio_costo) || 0)
+                : (parseInt(prod.precio_costo) || 0);
+
+            console.log(`[SKU: ${sku}] (${prod.descripcion || 'Sin desc'}) -> 
+            Ingresos (Historial): ${ingresosSku}
+            Egresos Administrativos (Historial): ${egresosMovimientosSku}
+            Egresos Comerciales (Ventas): ${egresosVentasSku}
+            Stock Neto Calculado: ${stockNetoReal}
+            Costo Unitario Usado: $${ultimoCostoCompra}`);
+
             if (stockNetoReal > 0) {
-                const comprasProducto = historialMovimientos
-                    .filter(m => m.sku === sku && m.tipo_movimiento === 'COMPRA')
-                    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-                const ultimoCostoCompra = comprasProducto.length > 0 
-                    ? (parseInt(comprasProducto[0].precio_costo_unitario) || parseInt(comprasProducto[0].precio_costo) || 0)
-                    : (parseInt(prod.precio_costo) || 0);
-
-                capitalTotal += (stockNetoReal * ultimoCostoCompra);
+                const subtotalProducto = stockNetoReal * ultimoCostoCompra;
+                capitalTotal += subtotalProducto;
+                console.log(`   -> CIFRA POSITIVA: Sumando $${subtotalProducto} al capital total.`);
+            } else {
+                console.log(`   -> OMITIDO: El stock es 0 o negativo.`);
             }
         });
 
+        console.log(`=== FIN DEBUG: Capital Total Resultante = $${capitalTotal} ===`);
         elemento.innerText = `$${capitalTotal.toLocaleString('es-CL')}`;
 
     } catch (error) {
@@ -130,20 +149,20 @@ async function analizarTramosHorarios() {
 
     const ventas = await obtenerDatosDeAlmacen('ventas');
     const conteoTramos = {
-        'Mañana (06:00 - 12:00)': 0,
-        'Tarde (12:00 - 18:00)': 0,
-        'Vespertino (18:00 - 00:00)': 0,
-        'Nocturno (00:00 - 06:00)': 0
+        'Mañana (06:00 - 11:00)': 0,
+        'Mediodía (11:00 - 14:00)': 0,
+        'Tarde (14:00 - 18:00)': 0,
+        'Nocturno (18:00 - 22:00)': 0
     };
 
     ventas.forEach(v => {
         if (!v.fecha) return;
         const hora = new Date(v.fecha).getHours();
 
-        if (hora >= 6 && hora < 12) conteoTramos['Mañana (06:00 - 12:00)']++;
-        else if (hora >= 12 && hora < 18) conteoTramos['Tarde (12:00 - 18:00)']++;
-        else if (hora >= 18 && hora < 24) conteoTramos['Vespertino (18:00 - 00:00)']++;
-        else conteoTramos['Nocturno (00:00 - 06:00)']++;
+        if (hora >= 7 && hora < 11) conteoTramos['Mañana (07:00 - 11:00)']++;
+        else if (hora >= 11 && hora < 14) conteoTramos['Mediodía (11:00 - 14:00)']++;
+        else if (hora >= 14 && hora < 18) conteoTramos['Tarde (14:00 - 18:00)']++;
+        else conteoTramos['Nocturno (18:00 - 22:00)']++;
     });
 
     const maxVentas = Math.max(...Object.values(conteoTramos), 1);

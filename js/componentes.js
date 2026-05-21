@@ -5,7 +5,7 @@ class MainHeader extends HTMLElement {
         this.innerHTML = `
         <header>
             <div class="logo-area">
-                <h2>FrausTech <span>BI Local</span></h2>
+                <h2> Gestión comercial </h2>
             </div>
             <nav>
                 <ul>

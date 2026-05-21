@@ -1,5 +1,5 @@
 header {
-    background-color: var(--bg-interacciones);
+    background-color: var(--bg-paneles);
     border-bottom: 3px solid var(--borde);
     padding: 0 15px;
     box-shadow: 0 2px 8px var(--sombra);
@@ -10,7 +10,7 @@ header {
     padding-top: 15px;
     font-size: 22px;
     font-weight: 800;
-    color: var(--accent);
+    color: var(--advertencia);
     letter-spacing: 0.5px;
 }
 
