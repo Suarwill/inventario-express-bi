@@ -316,7 +316,7 @@ footer {
         grid-template-columns: 1fr 380px;
         gap: 20px;
         align-items: start;
-    }
+    }   
     
     .pos-izquierda {
         margin-bottom: 0;
