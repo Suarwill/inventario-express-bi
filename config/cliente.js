@@ -7,7 +7,7 @@ window.CONFIG_CLIENTE = {
     },
     licencia: {
         clave: "FT-982X-LPL0-2026",
-        estado: "activa",
+        estado: "ACTIVA",
         vencimiento: "2027-12-31"
     },
     interfaz: {
